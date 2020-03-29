@@ -26,12 +26,23 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 # print(Test_data.shape)
 
 
-
 ## 2.3.3 总览数据概况
 ## 1) 通过describe()来熟悉数据的相关统计量
 # print(Train_data.describe())
 # print(Test_data.describe())
 
 ## 2) 通过info()来熟悉数据类型
-print(Train_data.info())
-print(Test_data.info())
+# print(Train_data.info())
+# print(Test_data.info())
+
+
+## 2.3.4 判断数据缺失和异常
+## 1) 查看每列的存在nan情况
+# print(Train_data.isnull().sum())
+# print(Test_data.isnull().sum())
+
+# nan可视化
+missing = Train_data.isnull().sum()
+missing = missing[missing > 0]
+missing.sort_values(inplace=True)
+missing.plot.bar()
