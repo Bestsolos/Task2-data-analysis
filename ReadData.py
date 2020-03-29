@@ -87,3 +87,37 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 ## 2.3.5 了解预测值的分布
 # print(Train_data['price'])
 # print(Train_data['price'].value_counts())
+
+## 1) 总体分布概况（无界约翰逊分布等）
+import scipy.stats as st
+# y = Train_data['price']
+# plt.figure(1); plt.title('Johnson SU')
+# sns.distplot(y, kde=False, fit=st.johnsonsu)
+# plt.figure(2); plt.title('Normal')
+# sns.distplot(y, kde=False, fit=st.norm)
+# plt.figure(3); plt.title('Log Normal')
+# sns.distplot(y, kde=False, fit=st.lognorm)
+# plt.show()
+
+## 2) 查看skewness and kurtosis
+# sns.distplot(Train_data['price']);
+# print("Skewness: %f" % Train_data['price'].skew())
+# print("Kurtosis: %f" % Train_data['price'].kurt())
+# plt.show()
+
+# print(Train_data.skew(), Train_data.kurt())
+
+# skew、kurt说明参考https://www.cnblogs.com/wyy1480/p/10474046.html
+# sns.distplot(Train_data.skew(),color='blue',axlabel ='Skewness')
+# plt.show()
+
+# sns.distplot(Train_data.kurt(),color='orange',axlabel ='Kurtness')
+# plt.show()
+
+## 3) 查看预测值的具体频数
+plt.hist(Train_data['price'], orientation = 'vertical',histtype = 'bar', color ='red')
+plt.show()
+
+# log变换 z之后的分布较均匀，可以进行log变换进行预测，这也是预测问题常用的trick
+plt.hist(np.log(Train_data['price']), orientation = 'vertical',histtype = 'bar', color ='red') 
+plt.show()
