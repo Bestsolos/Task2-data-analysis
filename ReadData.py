@@ -42,7 +42,17 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 # print(Test_data.isnull().sum())
 
 # nan可视化
-missing = Train_data.isnull().sum()
-missing = missing[missing > 0]
-missing.sort_values(inplace=True)
-missing.plot.bar()
+# missing = Train_data.isnull().sum()
+# missing = missing[missing > 0]
+# missing.sort_values(inplace=True)
+# missing.plot.bar()
+# plt.show()
+
+# 可视化看下缺省值
+# msno.matrix(Train_data.sample(250))
+# msno.bar(Train_data.sample(1000))
+# plt.show()
+
+#msno.matrix(Test_data.sample(250))
+#msno.bar(Test_data.sample(1000))
+# plt.show()
