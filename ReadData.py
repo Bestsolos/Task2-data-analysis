@@ -37,7 +37,7 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 
 
 ## 2.3.4 判断数据缺失和异常
-## 1) 查看每列的存在nan情况
+## 1) 查看每列的存在nan情况,数据缺失为nan
 # print(Train_data.isnull().sum())
 # print(Test_data.isnull().sum())
 
@@ -54,5 +54,36 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 # plt.show()
 
 # msno.matrix(Test_data.sample(250))
-msno.bar(Test_data.sample(1000))
-plt.show()
+# msno.bar(Test_data.sample(1000))
+# plt.show()
+
+## 2) 查看异常值检测
+# Train_data.info()
+# print(Train_data['notRepairedDamage'].value_counts())
+
+# '-'也为空缺值，因为很多模型对nan有直接的处理，这里我们先不做处理，先替换成nan
+# Train_data['notRepairedDamage'].replace('-', np.nan, inplace=True)
+# print(Train_data['notRepairedDamage'].value_counts())
+
+# Train_data.isnull().sum()
+# Test_data['notRepairedDamage'].value_counts()
+# Test_data['notRepairedDamage'].replace('-', np.nan, inplace=True)
+
+# Train_data.isnull().sum()
+
+# Test_data['notRepairedDamage'].value_counts()
+# Test_data['notRepairedDamage'].replace('-', np.nan, inplace=True)
+
+# 以下两个类别特征严重倾斜，一般不会对预测有什么帮助，故这边先删掉
+# 当然也可以继续挖掘，但是一般意义不大
+# Train_data["seller"].value_counts()
+# Train_data["offerType"].value_counts()
+# del Train_data["seller"]
+# del Train_data["offerType"]
+# del Test_data["seller"]
+# del Test_data["offerType"]
+
+
+## 2.3.5 了解预测值的分布
+# print(Train_data['price'])
+# print(Train_data['price'].value_counts())
