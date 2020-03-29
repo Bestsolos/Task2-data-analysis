@@ -14,7 +14,7 @@ import missingno as msno
 
 ## 2.3.2 载入数据
 ## 1) 载入训练集和测试集；
-path = 'C:/Users/Huang Qiang/Desktop/task2/'
+path = 'C:/Users/Huang Qiang/Desktop/task1/'
 Train_data = pd.read_csv(path+'used_car_train_20200313.csv', sep=' ')
 Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 
@@ -53,6 +53,6 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 # msno.bar(Train_data.sample(1000))
 # plt.show()
 
-#msno.matrix(Test_data.sample(250))
-#msno.bar(Test_data.sample(1000))
-# plt.show()
+# msno.matrix(Test_data.sample(250))
+msno.bar(Test_data.sample(1000))
+plt.show()
