@@ -115,9 +115,39 @@ import scipy.stats as st
 # plt.show()
 
 ## 3) 查看预测值的具体频数
-plt.hist(Train_data['price'], orientation = 'vertical',histtype = 'bar', color ='red')
-plt.show()
+# plt.hist(Train_data['price'], orientation = 'vertical',histtype = 'bar', color ='red')
+# plt.show()
 
 # log变换 z之后的分布较均匀，可以进行log变换进行预测，这也是预测问题常用的trick
-plt.hist(np.log(Train_data['price']), orientation = 'vertical',histtype = 'bar', color ='red') 
-plt.show()
+# plt.hist(np.log(Train_data['price']), orientation = 'vertical',histtype = 'bar', color ='red') 
+# plt.show()
+
+
+## 2.3.6 特征分为类别特征和数字特征，并对类别特征查看unique分布
+# 分离label即预测值
+Y_train = Train_data['price']
+
+### 这个区别方式适用于没有直接label coding的数据
+### 这里不适用，需要人为根据实际含义来区分
+### 数字特征
+### numeric_features = Train_data.select_dtypes(include=[np.number])
+### numeric_features.columns
+### # 类型特征
+### categorical_features = Train_data.select_dtypes(include=[np.object])
+### categorical_features.columns
+
+numeric_features = ['power', 'kilometer', 'v_0', 'v_1', 'v_2', 'v_3', 'v_4', 'v_5', 'v_6', 'v_7', 'v_8', 'v_9', 'v_10', 'v_11', 'v_12', 'v_13','v_14' ]
+
+categorical_features = ['name', 'model', 'brand', 'bodyType', 'fuelType', 'gearbox', 'notRepairedDamage', 'regionCode']
+
+# 特征nunique分布
+for cat_fea in categorical_features:
+    print(cat_fea + "的特征分布如下：")
+    print("{}特征有个{}不同的值".format(cat_fea, Train_data[cat_fea].nunique()))
+    print(Train_data[cat_fea].value_counts())
+
+# 特征nunique分布
+for cat_fea in categorical_features:
+    print(cat_fea + "的特征分布如下：")
+    print("{}特征有个{}不同的值".format(cat_fea, Test_data[cat_fea].nunique()))
+    print(Test_data[cat_fea].value_counts())
