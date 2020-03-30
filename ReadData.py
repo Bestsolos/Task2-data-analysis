@@ -295,3 +295,7 @@ def count_plot(x,  **kwargs):
 
 
 ## 2.3.9 用pandas_profiling生成数据报告
+# import pandas_profiling
+
+# pfr = pandas_profiling.ProfileReport(Train_data)
+# pfr.to_file("./example.html")
