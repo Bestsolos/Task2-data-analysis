@@ -78,10 +78,10 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 # 当然也可以继续挖掘，但是一般意义不大
 # Train_data["seller"].value_counts()
 # Train_data["offerType"].value_counts()
-# del Train_data["seller"]
-# del Train_data["offerType"]
-# del Test_data["seller"]
-# del Test_data["offerType"]
+del Train_data["seller"]
+del Train_data["offerType"]
+del Test_data["seller"]
+del Test_data["offerType"]
 
 
 ## 2.3.5 了解预测值的分布
@@ -100,6 +100,8 @@ import scipy.stats as st
 # plt.show()
 
 ## 2) 查看skewness and kurtosis
+# skewness 对称性 值>0右拖尾<0左拖尾。值越大越不对称
+# kurtosis 尖锐值 越大越尖锐，=0时正态分布
 # sns.distplot(Train_data['price']);
 # print("Skewness: %f" % Train_data['price'].skew())
 # print("Kurtosis: %f" % Train_data['price'].kurt())
@@ -129,7 +131,7 @@ Y_train = Train_data['price']
 
 ### 这个区别方式适用于没有直接label coding的数据
 ### 这里不适用，需要人为根据实际含义来区分
-### 数字特征
+### # 数字特征
 ### numeric_features = Train_data.select_dtypes(include=[np.number])
 ### numeric_features.columns
 ### # 类型特征
