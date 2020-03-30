@@ -138,16 +138,95 @@ Y_train = Train_data['price']
 
 numeric_features = ['power', 'kilometer', 'v_0', 'v_1', 'v_2', 'v_3', 'v_4', 'v_5', 'v_6', 'v_7', 'v_8', 'v_9', 'v_10', 'v_11', 'v_12', 'v_13','v_14' ]
 
-categorical_features = ['name', 'model', 'brand', 'bodyType', 'fuelType', 'gearbox', 'notRepairedDamage', 'regionCode']
+# categorical_features = ['name', 'model', 'brand', 'bodyType', 'fuelType', 'gearbox', 'notRepairedDamage', 'regionCode']
 
 # 特征nunique分布
-for cat_fea in categorical_features:
-    print(cat_fea + "的特征分布如下：")
-    print("{}特征有个{}不同的值".format(cat_fea, Train_data[cat_fea].nunique()))
-    print(Train_data[cat_fea].value_counts())
+#for cat_fea in categorical_features:
+#    print(cat_fea + "的特征分布如下：")
+#    print("{}特征有个{}不同的值".format(cat_fea, Train_data[cat_fea].nunique()))
+#    print(Train_data[cat_fea].value_counts())
 
 # 特征nunique分布
-for cat_fea in categorical_features:
-    print(cat_fea + "的特征分布如下：")
-    print("{}特征有个{}不同的值".format(cat_fea, Test_data[cat_fea].nunique()))
-    print(Test_data[cat_fea].value_counts())
+#for cat_fea in categorical_features:
+#    print(cat_fea + "的特征分布如下：")
+#    print("{}特征有个{}不同的值".format(cat_fea, Test_data[cat_fea].nunique()))
+#    print(Test_data[cat_fea].value_counts())
+
+
+## 2.3.7 数字特征分析
+# numeric_features.append('price')
+# print(numeric_features)
+
+## 1) 相关性分析
+price_numeric = Train_data[numeric_features]
+correlation = price_numeric.corr()
+# print(correlation['price'].sort_values(ascending = False),'\n')
+
+# f , ax = plt.subplots(figsize = (7, 7))
+
+# plt.title('Correlation of Numeric Features with Price',y=1,size=16)
+
+# sns.heatmap(correlation,square = True,  vmax=0.8)
+# plt.show()
+
+# del price_numeric['price']
+
+## 2) 查看几个特征得 偏度和峰值
+# for col in numeric_features:
+#    print('{:15}'.format(col), 
+#          'Skewness: {:05.2f}'.format(Train_data[col].skew()) , 
+#          '   ' ,
+#          'Kurtosis: {:06.2f}'.format(Train_data[col].kurt())  
+#         )
+
+
+## 3) 每个数字特征得分布可视化
+# f = pd.melt(Train_data, value_vars=numeric_features)
+# g = sns.FacetGrid(f, col="variable",  col_wrap=2, sharex=False, sharey=False)
+# g = g.map(sns.distplot, "value")
+# plt.show()
+
+
+## 4) 数字特征相互之间的关系可视化
+# sns.set()
+# columns = ['price', 'v_12', 'v_8' , 'v_0', 'power', 'v_5',  'v_2', 'v_6', 'v_1', 'v_14']
+# sns.pairplot(Train_data[columns],size = 2 ,kind ='scatter',diag_kind='kde')
+# plt.show()
+
+# print(Train_data.columns)
+# print(Y_train)
+
+## 5) 多变量互相回归关系可视化
+#fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(24, 20))
+# ['v_12', 'v_8' , 'v_0', 'power', 'v_5',  'v_2', 'v_6', 'v_1', 'v_14']
+
+#v_12_scatter_plot = pd.concat([Y_train,Train_data['v_12']],axis = 1)
+#sns.regplot(x='v_12',y = 'price', data = v_12_scatter_plot,scatter= True, fit_reg=True, ax=ax1)
+
+#v_8_scatter_plot = pd.concat([Y_train,Train_data['v_8']],axis = 1)
+#sns.regplot(x='v_8',y = 'price',data = v_8_scatter_plot,scatter= True, fit_reg=True, ax=ax2)
+
+#v_0_scatter_plot = pd.concat([Y_train,Train_data['v_0']],axis = 1)
+#sns.regplot(x='v_0',y = 'price',data = v_0_scatter_plot,scatter= True, fit_reg=True, ax=ax3)
+
+#power_scatter_plot = pd.concat([Y_train,Train_data['power']],axis = 1)
+#sns.regplot(x='power',y = 'price',data = power_scatter_plot,scatter= True, fit_reg=True, ax=ax4)
+
+#v_5_scatter_plot = pd.concat([Y_train,Train_data['v_5']],axis = 1)
+#sns.regplot(x='v_5',y = 'price',data = v_5_scatter_plot,scatter= True, fit_reg=True, ax=ax5)
+
+#v_2_scatter_plot = pd.concat([Y_train,Train_data['v_2']],axis = 1)
+#sns.regplot(x='v_2',y = 'price',data = v_2_scatter_plot,scatter= True, fit_reg=True, ax=ax6)
+
+#v_6_scatter_plot = pd.concat([Y_train,Train_data['v_6']],axis = 1)
+#sns.regplot(x='v_6',y = 'price',data = v_6_scatter_plot,scatter= True, fit_reg=True, ax=ax7)
+
+#v_1_scatter_plot = pd.concat([Y_train,Train_data['v_1']],axis = 1)
+#sns.regplot(x='v_1',y = 'price',data = v_1_scatter_plot,scatter= True, fit_reg=True, ax=ax8)
+
+#v_14_scatter_plot = pd.concat([Y_train,Train_data['v_14']],axis = 1)
+#sns.regplot(x='v_14',y = 'price',data = v_14_scatter_plot,scatter= True, fit_reg=True, ax=ax9)
+
+#v_13_scatter_plot = pd.concat([Y_train,Train_data['v_13']],axis = 1)
+#sns.regplot(x='v_13',y = 'price',data = v_13_scatter_plot,scatter= True, fit_reg=True, ax=ax10)
+#plt.show()
