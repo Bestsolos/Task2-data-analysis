@@ -138,7 +138,7 @@ Y_train = Train_data['price']
 
 numeric_features = ['power', 'kilometer', 'v_0', 'v_1', 'v_2', 'v_3', 'v_4', 'v_5', 'v_6', 'v_7', 'v_8', 'v_9', 'v_10', 'v_11', 'v_12', 'v_13','v_14' ]
 
-# categorical_features = ['name', 'model', 'brand', 'bodyType', 'fuelType', 'gearbox', 'notRepairedDamage', 'regionCode']
+categorical_features = ['name', 'model', 'brand', 'bodyType', 'fuelType', 'gearbox', 'notRepairedDamage', 'regionCode']
 
 # 特征nunique分布
 #for cat_fea in categorical_features:
@@ -230,3 +230,68 @@ correlation = price_numeric.corr()
 #v_13_scatter_plot = pd.concat([Y_train,Train_data['v_13']],axis = 1)
 #sns.regplot(x='v_13',y = 'price',data = v_13_scatter_plot,scatter= True, fit_reg=True, ax=ax10)
 #plt.show()
+
+
+## 2.3.8 类别特征分析
+## 1) unique分布
+# for fea in categorical_features:
+#    print(Train_data[fea].nunique())
+# print(categorical_features)
+
+
+## 2) 类别特征箱形图可视化
+
+# 因为 name和 regionCode的类别太稀疏了，这里我们把不稀疏的几类画一下
+categorical_features = ['model',
+ 'brand',
+ 'bodyType',
+ 'fuelType',
+ 'gearbox',
+ 'notRepairedDamage']
+#for c in categorical_features:
+#    Train_data[c] = Train_data[c].astype('category')
+#    if Train_data[c].isnull().any():
+#        Train_data[c] = Train_data[c].cat.add_categories(['MISSING'])
+#        Train_data[c] = Train_data[c].fillna('MISSING')
+
+def boxplot(x, y, **kwargs):
+    sns.boxplot(x=x, y=y)
+    x=plt.xticks(rotation=90)
+
+#f = pd.melt(Train_data, id_vars=['price'], value_vars=categorical_features)
+#g = sns.FacetGrid(f, col="variable",  col_wrap=2, sharex=False, sharey=False, size=5)
+#g = g.map(boxplot, "value", "price")
+#plt.show()
+
+
+## 3) 类别特征的小提琴图可视化
+catg_list = categorical_features
+target = 'price'
+#for catg in catg_list :
+#    sns.violinplot(x=catg, y=target, data=Train_data)
+#    plt.show()
+
+
+## 4) 类别特征的柱形图可视化
+def bar_plot(x, y, **kwargs):
+    sns.barplot(x=x, y=y)
+    x=plt.xticks(rotation=90)
+
+#f = pd.melt(Train_data, id_vars=['price'], value_vars=categorical_features)
+#g = sns.FacetGrid(f, col="variable",  col_wrap=2, sharex=False, sharey=False, size=5)
+#g = g.map(bar_plot, "value", "price")
+#plt.show()
+
+
+##  5) 类别特征的每个类别频数可视化(count_plot)
+def count_plot(x,  **kwargs):
+    sns.countplot(x=x)
+    x=plt.xticks(rotation=90)
+
+#f = pd.melt(Train_data,  value_vars=categorical_features)
+#g = sns.FacetGrid(f, col="variable",  col_wrap=2, sharex=False, sharey=False, size=5)
+#g = g.map(count_plot, "value")
+#plt.show()
+
+
+## 2.3.9 用pandas_profiling生成数据报告
