@@ -171,7 +171,7 @@ correlation = price_numeric.corr()
 # sns.heatmap(correlation,square = True,  vmax=0.8)
 # plt.show()
 
-# del price_numeric['price']
+del price_numeric['price']
 
 ## 2) 查看几个特征得 偏度和峰值
 # for col in numeric_features:

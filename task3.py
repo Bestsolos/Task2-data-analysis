@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from operator import itemgetter
 
-# %matplotlib inline
-
+# jupyter notebook
 path = 'C:/Users/Huang Qiang/Desktop/task1/'
 Train_data = pd.read_csv(path+'used_car_train_20200313.csv', sep=' ')
 Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
@@ -14,6 +13,7 @@ Test_data = pd.read_csv(path+'used_car_testA_20200313.csv', sep=' ')
 
 ## 3.3.1 删除异常值
 # 这里我包装了一个异常值处理的代码，可以随便调用。
+# column wise data preprocessing
 def outliers_proc(data, col_name, scale=3):
     """
     用于清洗异常值，默认用 box_plot（scale=3）进行清洗
@@ -41,12 +41,15 @@ def outliers_proc(data, col_name, scale=3):
     data_series = data_n[col_name]
     rule, value = box_plot_outliers(data_series, box_scale=scale)
     index = np.arange(data_series.shape[0])[rule[0] | rule[1]]
+#
+#    print("index is ", index) # row numbers of data_series that statisfy the rule[0] or rule[1]
 #    print("Delete number is: {}".format(len(index)))
     data_n = data_n.drop(index)
     data_n.reset_index(drop=True, inplace=True)
 #    print("Now column number is: {}".format(data_n.shape[0]))
     index_low = np.arange(data_series.shape[0])[rule[0]]
-    outliers = data_series.iloc[index_low]
+    outliers = data_series.iloc[index_low] # index 索引 < value_low的行数索引
+   # outliers = data_Series.iloc[[0,1,2]]
 #    print("Description of data less than the lower bound is:")
 #    print(pd.Series(outliers).describe())
     index_up = np.arange(data_series.shape[0])[rule[1]]
@@ -71,8 +74,11 @@ Train_data = outliers_proc(Train_data, 'power', scale=3)
 # 训练集和测试集放在一起，方便构造特征
 Train_data['train']=1
 Test_data['train']=0
+# train_data[1,2,3] test_data = [4,5] => [1,2,3,4,5]
 data = pd.concat([Train_data, Test_data], ignore_index=True)
-
+# print(Train_data.shape) m1,n
+# print(Test_data.shape) m2,n
+# print(data.shape) m1+m2, n
 # 使用时间：data['creatDate'] - data['regDate']，反应汽车使用时间
 # 一般来说价格与使用时间成反比
 # 不过要注意，数据里有时间出错的格式，所以我们需要 errors='coerce'
@@ -84,6 +90,12 @@ data['used_time'] = (pd.to_datetime(data['creatDate'], format='%Y%m%d', errors='
 # 我们可以先放着，因为如果我们 XGBoost 之类的决策树，其本身就能处理缺失值，所以可以不用管；
 # data['used_time'].isnull().sum()
 # print结果为15072
+
+# str a = "hello" => "hel"
+
+# def f(x):
+#     return  str(x)[:-3]
+# f(a)
 
 # 从邮编中提取城市信息，相当于加入了先验知识
 data['city'] = data['regionCode'].apply(lambda x : str(x)[:-3])
@@ -106,7 +118,7 @@ for kind, kind_data in Train_gb:
     all_info[kind] = info
 brand_fe = pd.DataFrame(all_info).T.reset_index().rename(columns={"index": "brand"})
 data = data.merge(brand_fe, how='left', on='brand')
-
+# left join 
 
 # 数据分桶 以 power 为例
 # 这时候我们的缺失值也进桶了，
@@ -121,4 +133,110 @@ data = data.merge(brand_fe, how='left', on='brand')
 
 bin = [i*10 for i in range(31)]
 data['power_bin'] = pd.cut(data['power'], bin, labels=False)
+print(data['power_bin'])
 data[['power_bin', 'power']].head()
+
+# 删除不需要的数据
+data = data.drop(['creatDate', 'regDate', 'regionCode'], axis=1)
+# print(data.shape)     #(199037, 39)
+# data.columns      #Index(['SaleID', 'bodyType', 'brand', 'fuelType', 'gearbox', 'kilometer',
+                    # 'model', 'name', 'notRepairedDamage', 'offerType', 'power', 'price',
+                    # 'seller', 'train', 'v_0', 'v_1', 'v_10', 'v_11', 'v_12', 'v_13', 'v_14',
+                    # 'v_2', 'v_3', 'v_4', 'v_5', 'v_6', 'v_7', 'v_8', 'v_9', 'used_time',
+                    # 'city', 'brand_amount', 'brand_price_average', 'brand_price_max',
+                    # 'brand_price_median', 'brand_price_min', 'brand_price_std',
+                    # 'brand_price_sum', 'power_bin'],
+                    # dtype='object')
+
+# 目前的数据其实已经可以给树模型使用了，所以我们导出一下
+data.to_csv('data_for_tree.csv', index=0)
+
+# 我们可以再构造一份特征给 LR NN 之类的模型用
+# 之所以分开构造是因为，不同模型对数据集的要求不同
+# 我们看下数据分布：
+data['power'].plot.hist()
+
+# 我们刚刚已经对 train 进行异常值处理了，但是现在还有这么奇怪的分布是因为 test 中的 power 异常值，
+# 所以我们其实刚刚 train 中的 power 异常值不删为好，可以用长尾分布截断来代替
+Train_data['power'].plot.hist()
+
+# 我们对其取 log，在做归一化
+from sklearn import preprocessing
+min_max_scaler = preprocessing.MinMaxScaler()
+data['power'] = np.log(data['power'] + 1) 
+data['power'] = ((data['power'] - np.min(data['power'])) / (np.max(data['power']) - np.min(data['power'])))
+data['power'].plot.hist()
+
+# km 的比较正常，应该是已经做过分桶了
+data['kilometer'].plot.hist()
+
+# 所以我们可以直接做归一化
+data['kilometer'] = ((data['kilometer'] - np.min(data['kilometer'])) / 
+                        (np.max(data['kilometer']) - np.min(data['kilometer'])))
+data['kilometer'].plot.hist()
+
+# 除此之外 还有我们刚刚构造的统计量特征：
+# 'brand_amount', 'brand_price_average', 'brand_price_max',
+# 'brand_price_median', 'brand_price_min', 'brand_price_std',
+# 'brand_price_sum'
+# 这里不再一一举例分析了，直接做变换，
+def max_min(x):
+    return (x - np.min(x)) / (np.max(x) - np.min(x))
+
+data['brand_amount'] = ((data['brand_amount'] - np.min(data['brand_amount'])) / 
+                        (np.max(data['brand_amount']) - np.min(data['brand_amount'])))
+data['brand_price_average'] = ((data['brand_price_average'] - np.min(data['brand_price_average'])) / 
+                               (np.max(data['brand_price_average']) - np.min(data['brand_price_average'])))
+data['brand_price_max'] = ((data['brand_price_max'] - np.min(data['brand_price_max'])) / 
+                           (np.max(data['brand_price_max']) - np.min(data['brand_price_max'])))
+data['brand_price_median'] = ((data['brand_price_median'] - np.min(data['brand_price_median'])) /
+                              (np.max(data['brand_price_median']) - np.min(data['brand_price_median'])))
+data['brand_price_min'] = ((data['brand_price_min'] - np.min(data['brand_price_min'])) / 
+                           (np.max(data['brand_price_min']) - np.min(data['brand_price_min'])))
+data['brand_price_std'] = ((data['brand_price_std'] - np.min(data['brand_price_std'])) / 
+                           (np.max(data['brand_price_std']) - np.min(data['brand_price_std'])))
+data['brand_price_sum'] = ((data['brand_price_sum'] - np.min(data['brand_price_sum'])) / 
+                           (np.max(data['brand_price_sum']) - np.min(data['brand_price_sum'])))
+
+# 对类别特征进行 OneEncoder
+data = pd.get_dummies(data, columns=['model', 'brand', 'bodyType', 'fuelType',
+                                     'gearbox', 'notRepairedDamage', 'power_bin'])
+
+#print(data.shape)  # (199037, 370)
+#data.columns       # Index(['SaleID', 'kilometer', 'name', 'offerType', 'power', 'price', 'seller',
+                    # 'train', 'v_0', 'v_1',
+                    # ...
+                    # 'power_bin_20.0', 'power_bin_21.0', 'power_bin_22.0', 'power_bin_23.0',
+                    # 'power_bin_24.0', 'power_bin_25.0', 'power_bin_26.0', 'power_bin_27.0',
+                    # 'power_bin_28.0', 'power_bin_29.0'],
+                    # dtype='object', length=370)
+
+# 这份数据可以给 LR 用
+data.to_csv('data_for_lr.csv', index=0)
+
+
+##3.3.3 特征筛选
+#1) 过滤式
+# 相关性分析
+data['power'].corr(data['price'], method='spearman')
+data['kilometer'].corr(data['price'], method='spearman')
+data['brand_amount'].corr(data['price'], method='spearman')
+data['brand_price_average'].corr(data['price'], method='spearman')
+data['brand_price_max'].corr(data['price'], method='spearman')
+data['brand_price_median'].corr(data['price'], method='spearman')
+# 0.572828519605
+# -0.408256970162
+# 0.0581566100256
+# 0.383490957606
+# 0.259066833881
+# 0.386910423934
+
+# 当然也可以直接看图
+data_numeric = data[['power', 'kilometer', 'brand_amount', 'brand_price_average', 
+                     'brand_price_max', 'brand_price_median']]
+correlation = data_numeric.corr()
+
+f , ax = plt.subplots(figsize = (7, 7))
+plt.title('Correlation of Numeric Features with Price',y=1,size=16)
+sns.heatmap(correlation,square = True,  vmax=0.8)
+
